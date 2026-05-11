@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from presentation.api.routes import auth, transactions, categories, reports
+from src.presentation.api.routes import auth, transactions, categories, reports
 
 app = FastAPI(title="Finance Manager API")
 
