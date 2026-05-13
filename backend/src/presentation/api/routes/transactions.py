@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, date
 from sqlalchemy.orm import Session
+from sqlalchemy import func, extract
 from src.infrastructure.database import get_db, Transaction, Category
 from src.infrastructure.auth import decode_token
 
@@ -47,6 +48,9 @@ def create_transaction(req: TransactionCreate, authorization: str = Header(None)
     db.commit()
     db.refresh(new_transaction)
     
+    # Get category info
+    category = db.query(Category).filter(Category.id == new_transaction.category_id).first()
+    
     return {
         "id": new_transaction.id,
         "user_id": new_transaction.user_id,
@@ -54,7 +58,9 @@ def create_transaction(req: TransactionCreate, authorization: str = Header(None)
         "type": new_transaction.type,
         "category_id": new_transaction.category_id,
         "description": new_transaction.description,
-        "date": str(new_transaction.transaction_date)
+        "date": str(new_transaction.transaction_date),
+        "category_name": category.name if category else "Unknown",
+        "category_icon": category.icon if category else "❓"
     }
 
 @router.get("")
@@ -77,11 +83,12 @@ def get_transactions(
     # Filter by month/year
     if month and year:
         query = query.filter(
-            db.func.MONTH(Transaction.transaction_date) == month,
-            db.func.YEAR(Transaction.transaction_date) == year
+            extract('month', Transaction.transaction_date) == month,
+            extract('year', Transaction.transaction_date) == year
         )
     
-    transactions = query.all()
+    # Order by date descending
+    transactions = query.order_by(Transaction.transaction_date.desc()).all()
     
     # Add category info
     result = []
@@ -128,6 +135,9 @@ def update_transaction(
     db.commit()
     db.refresh(transaction)
     
+    # Get category info
+    category = db.query(Category).filter(Category.id == transaction.category_id).first()
+    
     return {
         "id": transaction.id,
         "user_id": transaction.user_id,
@@ -135,7 +145,9 @@ def update_transaction(
         "type": transaction.type,
         "category_id": transaction.category_id,
         "description": transaction.description,
-        "date": str(transaction.transaction_date)
+        "date": str(transaction.transaction_date),
+        "category_name": category.name if category else "Unknown",
+        "category_icon": category.icon if category else "❓"
     }
 
 @router.delete("/{transaction_id}")
