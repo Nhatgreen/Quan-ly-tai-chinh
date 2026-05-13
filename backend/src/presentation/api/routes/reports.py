@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException, Depends
 from datetime import datetime
-from src.infrastructure.database import transactions_db, categories_db
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from src.infrastructure.database import get_db, Transaction, Category
 from src.infrastructure.auth import decode_token
 
 router = APIRouter()
@@ -18,34 +20,33 @@ def get_current_user(authorization: str = Header(None)):
     return int(payload["sub"])
 
 @router.get("/monthly")
-def get_monthly_report(month: int, year: int, authorization: str = Header(None)):
+def get_monthly_report(month: int, year: int, authorization: str = Header(None), db: Session = Depends(get_db)):
     user_id = get_current_user(authorization)
     
     # Get user transactions for the month
-    user_transactions = [
-        t for t in transactions_db.values() 
-        if t["user_id"] == user_id
-        and datetime.fromisoformat(t["date"]).month == month
-        and datetime.fromisoformat(t["date"]).year == year
-    ]
+    user_transactions = db.query(Transaction).filter(
+        Transaction.user_id == user_id,
+        func.MONTH(Transaction.transaction_date) == month,
+        func.YEAR(Transaction.transaction_date) == year
+    ).all()
     
-    total_income = sum(t["amount"] for t in user_transactions if t["type"] == "income")
-    total_expense = sum(t["amount"] for t in user_transactions if t["type"] == "expense")
+    total_income = sum(float(t.amount) for t in user_transactions if t.type == "income")
+    total_expense = sum(float(t.amount) for t in user_transactions if t.type == "expense")
     balance = total_income - total_expense
     
     # Group by category
     by_category = {}
     for t in user_transactions:
-        cat_id = t["category_id"]
+        cat_id = t.category_id
         if cat_id not in by_category:
-            category = categories_db.get(cat_id, {})
+            category = db.query(Category).filter(Category.id == cat_id).first()
             by_category[cat_id] = {
                 "category_id": cat_id,
-                "category_name": category.get("name", "Unknown"),
-                "category_icon": category.get("icon", "❓"),
+                "category_name": category.name if category else "Unknown",
+                "category_icon": category.icon if category else "❓",
                 "total": 0
             }
-        by_category[cat_id]["total"] += t["amount"]
+        by_category[cat_id]["total"] += float(t.amount)
     
     # Calculate daily average
     days_in_month = 30  # Simplified
