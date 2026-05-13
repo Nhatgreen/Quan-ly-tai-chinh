@@ -8,9 +8,9 @@ router = APIRouter()
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    username: str
     password: str
-    full_name: str = None
+    username: str = None  # Optional
+    full_name: str = None  # Optional
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -23,17 +23,22 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email đã tồn tại")
     
+    # Generate username from email if not provided
+    username = req.username if req.username else req.email.split('@')[0]
+    
     # Check if username exists
-    existing_username = db.query(User).filter(User.username == req.username).first()
+    existing_username = db.query(User).filter(User.username == username).first()
     if existing_username:
-        raise HTTPException(status_code=400, detail="Username đã tồn tại")
+        # Add random number to username
+        import random
+        username = f"{username}{random.randint(1000, 9999)}"
     
     # Create user
     new_user = User(
         email=req.email,
-        username=req.username,
+        username=username,
         password=hash_password(req.password),
-        full_name=req.full_name
+        full_name=req.full_name if req.full_name else username
     )
     
     db.add(new_user)
