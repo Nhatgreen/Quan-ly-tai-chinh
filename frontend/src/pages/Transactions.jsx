@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
+import ConfirmModal from '../components/ConfirmModal';
 import '../styles/Transactions.css';
 
 function Transactions() {
@@ -20,6 +21,8 @@ function Transactions() {
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear()
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     fetchTransactions();
@@ -112,12 +115,15 @@ function Transactions() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Bạn có chắc muốn xóa giao dịch này?')) return;
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
 
+  const handleDeleteConfirm = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/transactions/${id}`, {
+      const response = await fetch(`http://localhost:8000/api/transactions/${deleteId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -265,7 +271,7 @@ function Transactions() {
                           ✏️
                         </button>
                         <button
-                          onClick={() => handleDelete(transaction.id)}
+                          onClick={() => handleDeleteClick(transaction.id)}
                           className="btn-icon"
                           title="Xóa"
                         >
@@ -371,6 +377,14 @@ function Transactions() {
               </div>
             </div>
           )}
+
+          <ConfirmModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleDeleteConfirm}
+            title="Xóa giao dịch"
+            message="Bạn có chắc chắn muốn xóa giao dịch này? Hành động này không thể hoàn tác."
+          />
         </main>
       </div>
     </div>
