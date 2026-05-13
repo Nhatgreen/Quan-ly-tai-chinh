@@ -87,7 +87,23 @@ function Dashboard() {
             />
           </div>
 
-          {/* ML Prediction Card - Coming Soon */}
+          <div className="quick-stats">
+            <h3>Thống kê nhanh</h3>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <span className="stat-label">Giao dịch tháng này</span>
+                <span className="stat-value">{summary.transaction_count || 0}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Chi tiêu trung bình/ngày</span>
+                <span className="stat-value">
+                  {formatMoney(summary.daily_average || 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* ML Prediction Card - Below Quick Stats */}
           <div className="prediction-section">
             <div className="prediction-card">
               <div className="prediction-header">
@@ -120,22 +136,6 @@ function Dashboard() {
                   <span className="note-icon">💡</span>
                   <span>Tính năng ML sẽ phân tích xu hướng chi tiêu của bạn để đưa ra dự đoán chính xác hơn</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="quick-stats">
-            <h3>Thống kê nhanh</h3>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <span className="stat-label">Giao dịch tháng này</span>
-                <span className="stat-value">{summary.transaction_count || 0}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Chi tiêu trung bình/ngày</span>
-                <span className="stat-value">
-                  {formatMoney(summary.daily_average || 0)}
-                </span>
               </div>
             </div>
           </div>
