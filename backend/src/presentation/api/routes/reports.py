@@ -48,30 +48,24 @@ def get_monthly_report(month: int, year: int, authorization: str = Header(None),
             }
         by_category[cat_id]["total"] += float(t.amount)
     
-    # Calculate daily average - NEW LOGIC
-    # Find first transaction date and calculate days from first transaction to today
-    if user_transactions:
-        # Get all transaction dates
-        transaction_dates = [t.transaction_date for t in user_transactions]
-        first_transaction_date = min(transaction_dates)
-        
-        # Current date or last day of month if month is in the past
-        today = date.today()
-        current_date = today if (today.year == year and today.month == month) else date(year, month, 1)
-        
-        # If current month, use today; otherwise use last day of that month
-        if today.year == year and today.month == month:
-            end_date = today
-        else:
-            from calendar import monthrange
-            last_day = monthrange(year, month)[1]
-            end_date = date(year, month, last_day)
-        
-        # Calculate number of days from first transaction to end_date
-        days_with_transactions = (end_date - first_transaction_date).days + 1
-        daily_average = total_expense / days_with_transactions if days_with_transactions > 0 else 0
+    # Calculate daily average - CORRECTED LOGIC
+    # Days from day 1 of month to current day
+    today = date.today()
+    
+    # If current month, use today; otherwise use last day of that month
+    if today.year == year and today.month == month:
+        end_date = today
     else:
-        daily_average = 0
+        from calendar import monthrange
+        last_day = monthrange(year, month)[1]
+        end_date = date(year, month, last_day)
+    
+    # First day of the month
+    first_day_of_month = date(year, month, 1)
+    
+    # Calculate number of days from day 1 to end_date
+    days_in_period = (end_date - first_day_of_month).days + 1
+    daily_average = total_expense / days_in_period if days_in_period > 0 else 0
     
     return {
         "total_income": total_income,
