@@ -43,31 +43,115 @@
   color: #2c3e50;
 }
 
-.prediction-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* ML Prediction Section */
+.prediction-section {
   margin-bottom: 2rem;
 }
 
-.prediction-card h3 {
-  color: #2c3e50;
-  margin-bottom: 1rem;
+.prediction-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+.prediction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.prediction-header h3 {
+  color: white;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.badge-beta {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.prediction-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .prediction-amount {
-  font-size: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.amount-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.amount-value {
+  font-size: 2rem;
   font-weight: bold;
-  color: #e74c3c;
-  margin-bottom: 0.5rem;
+  color: #ffd700;
+}
+
+.prediction-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.detail-icon {
+  font-size: 1.2rem;
+}
+
+.detail-text {
+  font-size: 0.9rem;
+  opacity: 0.95;
 }
 
 .prediction-note {
-  color: #7f8c8d;
-  font-size: 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  border-left: 3px solid #ffd700;
 }
 
+.note-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.prediction-note span:last-child {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+/* Quick Stats */
 .quick-stats {
   background: white;
   padding: 1.5rem;
@@ -101,4 +185,21 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: #2c3e50;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .prediction-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .amount-value {
+    font-size: 1.5rem;
+  }
+
+  .prediction-card {
+    padding: 1.5rem;
+  }
 }

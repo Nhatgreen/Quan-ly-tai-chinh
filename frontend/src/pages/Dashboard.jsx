@@ -10,12 +10,10 @@ function Dashboard() {
     total_expense: 0,
     balance: 0
   });
-  const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSummary();
-    fetchPrediction();
   }, []);
 
   const fetchSummary = async () => {
@@ -40,17 +38,20 @@ function Dashboard() {
     }
   };
 
-  const fetchPrediction = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8000/api/predict/spending', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      setPrediction(data);
-    } catch (err) {
-      console.error('Error fetching prediction:', err);
+  const formatMoney = (value) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(value);
+  };
+
+  // Mock prediction based on current month average
+  const getPrediction = () => {
+    if (summary.daily_average && summary.daily_average > 0) {
+      // Predict next month based on 30 days average
+      return summary.daily_average * 30;
     }
+    return 0;
   };
 
   if (loading) {
@@ -86,20 +87,42 @@ function Dashboard() {
             />
           </div>
 
-          {prediction && (
+          {/* ML Prediction Card - Coming Soon */}
+          <div className="prediction-section">
             <div className="prediction-card">
-              <h3>🔮 Dự đoán tháng sau</h3>
-              <p className="prediction-amount">
-                Chi tiêu dự kiến: {new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND'
-                }).format(prediction.predicted_expense)}
-              </p>
-              <p className="prediction-note">
-                Dựa trên dữ liệu 6 tháng gần nhất
-              </p>
+              <div className="prediction-header">
+                <h3>🔮 Dự đoán chi tiêu tháng sau</h3>
+                <span className="badge-beta">AI Prediction</span>
+              </div>
+              
+              <div className="prediction-content">
+                <div className="prediction-amount">
+                  <span className="amount-label">Dự kiến chi tiêu:</span>
+                  <span className="amount-value">{formatMoney(getPrediction())}</span>
+                </div>
+                
+                <div className="prediction-details">
+                  <div className="detail-item">
+                    <span className="detail-icon">📊</span>
+                    <span className="detail-text">Dựa trên chi tiêu trung bình hiện tại</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">🤖</span>
+                    <span className="detail-text">Machine Learning đang được phát triển</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">📈</span>
+                    <span className="detail-text">Độ chính xác sẽ tăng theo thời gian</span>
+                  </div>
+                </div>
+
+                <div className="prediction-note">
+                  <span className="note-icon">💡</span>
+                  <span>Tính năng ML sẽ phân tích xu hướng chi tiêu của bạn để đưa ra dự đoán chính xác hơn</span>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
           <div className="quick-stats">
             <h3>Thống kê nhanh</h3>
@@ -111,10 +134,7 @@ function Dashboard() {
               <div className="stat-item">
                 <span className="stat-label">Chi tiêu trung bình/ngày</span>
                 <span className="stat-value">
-                  {new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                  }).format(summary.daily_average || 0)}
+                  {formatMoney(summary.daily_average || 0)}
                 </span>
               </div>
             </div>
