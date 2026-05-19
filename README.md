@@ -78,7 +78,7 @@ source database/finance-database-setup.sql
 Database sẽ tạo:
 - 8 tables (users, categories, transactions, monthly_reports, budgets, ml_predictions, user_settings)
 - 13 default categories
-- Sample data với demo user (username: `demo_user`, password: `password123`)
+- Sample data để test
 
 ### **3. Chạy Backend (Terminal 1)**
 
@@ -113,7 +113,7 @@ Frontend sẽ chạy tại: **http://localhost:3000**
 ## 🎯 Hướng dẫn sử dụng
 
 1. Mở trình duyệt tại http://localhost:3000
-2. Đăng ký tài khoản mới hoặc dùng demo user
+2. Đăng ký tài khoản mới
 3. Đăng nhập
 4. Thêm giao dịch thu/chi
 5. Xem Dashboard với tổng quan
@@ -165,31 +165,9 @@ Frontend sẽ chạy tại: **http://localhost:3000**
 - Backend API URL mặc định: `http://localhost:8000`
 - Có thể thay đổi trong các file `src/pages/*.jsx`
 
-## 📝 Roadmap
-
-- [x] MySQL database schema hoàn chỉnh
-- [x] Triggers & stored procedures
-- [x] Sample data
-- [ ] Tích hợp backend với MySQL
-- [ ] Machine Learning prediction
-- [ ] Export PDF/Excel
-- [ ] Multi-currency support
-- [ ] Mobile responsive improvements
-- [ ] Dark mode
-
-## 🐛 Known Issues
-
-- Backend cần cập nhật để kết nối MySQL (đang dùng in-memory)
-- Chưa có validation đầy đủ
-- Chưa có unit tests
-
 ## 📄 License
 
 MIT
-
-## 👨‍💻 Author
-
-Được tạo bởi MyServer AI Assistant
 
 ---
 
